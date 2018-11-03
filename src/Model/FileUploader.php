@@ -12,6 +12,9 @@ class FileUploader
 
     const UPLOAD_DIR = '/images/';
 
+    const MAX_WIDTH  = 320;
+    const MAX_HEIGHT = 240;
+
     public function uploadFile():array
     {
         if (!$_FILES['userfile']['error']) {
@@ -29,7 +32,19 @@ class FileUploader
 
                 if (move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadFile)) {
 
-                    // TODO обработка файлов с большим расширением !!
+                    if (!$this->checkImageSize($uploadFile)) {
+                        if (!$this->resizeImage($uploadFile)) {
+                            // на крайний случай (например, отсутствие библиотеки GD) будет выведно следующая ошибка
+                            // а сам исходный фал удален
+
+                            unlink($uploadFile);
+
+                            return [
+                                'success' => false,
+                                'message' => 'При загрузке файла произошла ошибка - ширина/высота загружаемого изображения превышает допустимые значения - ' . self::MAX_WIDTH . ' x ' . self::MAX_HEIGHT
+                            ];
+                        }
+                    }
 
                     return [
                         'success'    => true,
@@ -51,5 +66,64 @@ class FileUploader
             'success' => false,
             'message' => $message
         ];
+    }
+
+    private function resizeImage($fileName): bool
+    {
+        $width  = self::MAX_WIDTH;
+        $height = self::MAX_HEIGHT;
+
+        list($widthOrig, $heightOrig, $type) = getimagesize($fileName);
+
+        $types = array("", "gif", "jpeg", "png");
+
+        $extension = $types[$type];
+
+        if ($extension) {
+
+            echo '<pre>';
+            var_dump($extension);
+
+            $ratioOrig = $widthOrig/$heightOrig;
+
+            if ($width/$height > $ratioOrig) {
+                $width = $height * $ratioOrig;
+            } else {
+                $height = $width / $ratioOrig;
+            }
+
+            $funcFrom = 'imagecreatefrom'.$extension;
+            $img_i = $funcFrom($fileName);
+
+            $img_o = imagecreatetruecolor($width, $height);
+
+            // делает изначально фон прозрачным
+            $transparent = imagecolorallocatealpha($img_o, 0, 0, 0, 127);
+            imagefill($img_o, 0, 0, $transparent);
+            imagesavealpha($img_o, true);
+
+            imagecopyresampled($img_o, $img_i,0, 0, 0, 0, $width, $height, $widthOrig, $heightOrig);
+
+            $funcTo = 'image'.$extension;
+
+            return $funcTo($img_o, $fileName);
+        }
+
+        return false;
+    }
+
+    private function checkImageSize($fileName):bool
+    {
+        list($widthOrig, $heightOrig) = getimagesize($fileName);
+
+        if ($widthOrig > self::MAX_WIDTH) {
+            return false;
+        }
+
+        if ($heightOrig > self::MAX_HEIGHT) {
+            return false;
+        }
+
+        return true;
     }
 }
