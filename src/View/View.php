@@ -3,11 +3,21 @@
 namespace App\View;
 
 
+use App\Model\DB;
+
 class View
 {
     public function getIndexPage(): bool
     {
-        $this->generate('index_view.php');
+        // TODO try/catch
+        $db = new DB();
+        $listOfTasks = $db->getTasks();
+
+        $data = [
+            'listOfTasks' => $listOfTasks,
+        ];
+
+        $this->generate('index_view.php', $data);
         return true;
     }
 
