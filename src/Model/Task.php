@@ -18,14 +18,18 @@ class Task
                     'email'     => trim(htmlspecialchars($_POST['email'])),
                     'task_text' => trim(htmlspecialchars($_POST['task_text'])),
                     'img'       => ''
-                ];
+                ]; // TODO trim внутри проверка
 
                 if (isset($_FILES['userfile']) || !empty($_FILES['userfile'])) {
 
-//                    $file = new FileUploader();
-//                    $fileInfo = $file->uploadFile();
-//
-//                    $data['img'] = ''; // TODO указать название файла
+                    $file = new FileUploader();
+                    $uploadStatus = $file->uploadFile();
+
+                    if ($uploadStatus['success']) {
+                        $data['img'] = $uploadStatus['uploadFileName'];
+                    } else {
+                        // TODO ошибка при загрузке
+                    }
                 }
 
                 $db = new DB();
