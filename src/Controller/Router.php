@@ -35,7 +35,7 @@ class Router
 
                 unset($internalRoute);
 
-                $controllerNameWithNamespace = '\App\\' . array_shift($segments) . '\\' . array_shift($segments);
+                $classNameWithNamespace = '\App\\' . array_shift($segments) . '\\' . array_shift($segments);
 
                 $actionName = array_shift($segments);
 
@@ -43,9 +43,9 @@ class Router
 
                 unset($segments);
 
-                $controllerObject = new $controllerNameWithNamespace;
+                $classObject = new $classNameWithNamespace;
 
-                $result = call_user_func_array(array($controllerObject, $actionName), $parameters);
+                $result = call_user_func_array(array($classObject, $actionName), $parameters);
 
                 if ($result != null) {
                     return;
