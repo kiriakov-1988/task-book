@@ -40,4 +40,27 @@ class DB
 
         return [];
     }
+
+    public function addTask(array $taskData)
+    {
+        $sqlQuery = 'INSERT INTO `tasks` (`user_name`, `email`, `task_text`, `img`)
+                                  VALUES (:user_name, :email, :task_text, :img)';
+
+        $stmt = $this->connection->prepare($sqlQuery);
+
+        $stmt->bindParam(':user_name',$taskData['user_name']);
+        $stmt->bindParam(':email',$taskData['email']);
+        $stmt->bindParam(':task_text',$taskData['task_text']);
+        $stmt->bindParam(':img',$taskData['img']);
+
+        if ($stmt->execute()) {
+
+            return true;
+
+        } else {
+
+            return false;
+
+        }
+    }
 }

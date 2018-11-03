@@ -19,7 +19,7 @@ class Router
      * Формат: Namespace/ClassName/actionName/parameters
      */
     const ROUTES = [
-        '...' => '...',
+        'add-task' => 'Model/Task/addTask',
         '' => 'View/View/getIndexPage',
     ];
 

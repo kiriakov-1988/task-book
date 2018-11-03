@@ -12,3 +12,5 @@ define('CONFIG_DB', [
     'pass' => '789521',
     'name' => 'task_book',
 ]);
+
+define('CONFIG_MIME_TYPE', 'image/jpeg,image/gif,image/png');
