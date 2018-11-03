@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\View;
 
 
 class View
@@ -13,6 +13,6 @@ class View
 
     private function generate(string $content_view, array $data = null): void
     {
-        include '../view/template_view.php';
+        include '../templates/template_view.php';
     }
 }

@@ -16,18 +16,12 @@ class Router
 {
     /**
      * Список поддерживаемых маршрутов
+     * Формат: Namespace/ClassName/actionName/parameters
      */
     const ROUTES = [
         '...' => '...',
-        '' => 'View/getIndexPage',
+        '' => 'View/View/getIndexPage',
     ];
-
-    /**
-     * Неймспейс основных классов.
-     * В данном случае, при нахождении всех классов в одном месте,
-     * его можно и не указывать
-     */
-    const NAMESPACE_FOR_API_CLASS = '\App\Controller\\';
 
     public function run(): void
     {
@@ -41,7 +35,7 @@ class Router
 
                 unset($internalRoute);
 
-                $controllerName = self::NAMESPACE_FOR_API_CLASS . array_shift($segments);
+                $controllerNameWithNamespace = '\App\\' . array_shift($segments) . '\\' . array_shift($segments);
 
                 $actionName = array_shift($segments);
 
@@ -49,7 +43,7 @@ class Router
 
                 unset($segments);
 
-                $controllerObject = new $controllerName;
+                $controllerObject = new $controllerNameWithNamespace;
 
                 $result = call_user_func_array(array($controllerObject, $actionName), $parameters);
 
