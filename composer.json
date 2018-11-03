@@ -1,0 +1,10 @@
+{
+  "name": "kiriakov-1988/task-book",
+  "description": "task book organizing applications",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  }
+}
