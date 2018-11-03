@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 
+use App\View\View;
+
 /**
  * Class Router
  * Обрабатывает все запросы к данном приложению и
@@ -19,8 +21,8 @@ class Router
      * Формат: Namespace/ClassName/actionName/parameters
      */
     const ROUTES = [
-        'add-task' => 'Model/Task/addTask',
-        '' => 'View/View/getIndexPage',
+        '^add-task$' => 'Model/Task/addTask',
+        '^$' => 'View/View/getIndexPage',
     ];
 
     public function run(): void
@@ -55,7 +57,8 @@ class Router
         }
 
         header("HTTP/1.1 404 Not Found");
-        // TODO show 404 error page
+        $view = new View();
+        $view->showError();
         return;
     }
 
