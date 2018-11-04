@@ -24,6 +24,14 @@ class FileUploader
                 // на всякий случай обработка строки в названии файла ...
                 $inputFileName = htmlspecialchars(trim($_FILES['userfile']['name']));
 
+                if (mb_strlen($inputFileName) > 70) {
+                    // тут с запасом 70, так как к названию еще добавляет уникальная метка длиной гдето 20 символов
+                    return [
+                        'success' => false,
+                        'message' => 'Длина указаного файла превышает допустимую дину - 70 символов.'
+                    ];
+                }
+
                 $uniquer = new UniqueName($inputFileName);
 
                 $uniqueFileName = $uniquer->getUniqueFileName();
@@ -68,6 +76,21 @@ class FileUploader
         ];
     }
 
+    private function checkImageSize($fileName):bool
+    {
+        list($widthOrig, $heightOrig) = getimagesize($fileName);
+
+        if ($widthOrig > self::MAX_WIDTH) {
+            return false;
+        }
+
+        if ($heightOrig > self::MAX_HEIGHT) {
+            return false;
+        }
+
+        return true;
+    }
+
     private function resizeImage($fileName): bool
     {
         $width  = self::MAX_WIDTH;
@@ -110,20 +133,5 @@ class FileUploader
         }
 
         return false;
-    }
-
-    private function checkImageSize($fileName):bool
-    {
-        list($widthOrig, $heightOrig) = getimagesize($fileName);
-
-        if ($widthOrig > self::MAX_WIDTH) {
-            return false;
-        }
-
-        if ($heightOrig > self::MAX_HEIGHT) {
-            return false;
-        }
-
-        return true;
     }
 }

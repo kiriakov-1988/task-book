@@ -36,6 +36,8 @@
 
 <?php endif; ?>
 
+<?php include 'session-message.php'?>
+
 <h2 class="h4 mt-5">Новая задача</h2>
 
 <div class="row justify-content-center">

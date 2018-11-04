@@ -4,18 +4,27 @@ namespace App\View;
 
 
 use App\Model\DB;
+use App\Model\Session;
 
 class View
 {
     public function getIndexPage(): bool
     {
-        // TODO try/catch
-        $db = new DB();
-        $listOfTasks = $db->getTasks();
+        try {
+            $db = new DB();
+            $listOfTasks = $db->getTasks();
 
-        $data = [
-            'listOfTasks' => $listOfTasks,
-        ];
+            $data = [
+                'listOfTasks' => $listOfTasks,
+            ];
+        } catch (\PDOException $e) {
+            // Тут наверно не совсем желательно выводить текст ошибки из Исключения, а может только инфо-сообщение.
+            // Но такая ошибка восновном возникнет при развертывании приложения - и будет как раз в помощь.
+            Session::addSessionStatus('При загрузке данных из БД произошла PDO ошибка - ' . $e->getMessage());
+            $data = [
+                'listOfTasks' => '',
+            ];
+        }
 
         $this->generate('index_view.php', $data);
         return true;
