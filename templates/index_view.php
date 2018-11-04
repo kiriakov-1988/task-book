@@ -44,9 +44,11 @@
 
 <h2 class="h4 mt-5">Новая задача</h2>
 
-<div class="row justify-content-center">
+<div id="preview" class="w-50"></div>
 
-    <div class="col-8 p-3 border">
+<div class="row justify-content-center pb-5 ь">
+
+    <div class="col-9 p-3 border">
         <form enctype="multipart/form-data" method="post" action="/add-task">
 
             <div class="row">
@@ -70,18 +72,20 @@
             </div>
 
             <div class="row">
-                <div class="col-md-8 text-left">
+                <div class="col-md-7 text-left">
                     <label for="userfile">
                         Выберите картинку:
                     </label>
                     <input type="file" name="userfile" id="userfile" accept="<?=CONFIG_MIME_TYPE?>" maxlength="100" />
                 </div>
-                <div class="col-md-4 text-right">
-                    <input class="btn btn-success w-100" type="submit" value="Добавить" />
+                <div class="col-md-5 text-right">
+                    <input class="btn btn-secondary" type="button" value="Предварительный просмотр" onclick="preview()" />
                 </div>
             </div>
 
-            <!-- TODO Предварительный просмотр задачи -->
+            <p class="text-center pt-2">
+                <input class="btn btn-success w-25" type="submit" value="Добавить" />
+            </p>
 
         </form>
     </div>

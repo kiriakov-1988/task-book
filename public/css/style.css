@@ -1,3 +1,8 @@
 table.table th, table.table td  {
     vertical-align: middle;
 }
+
+#preview {
+    background-color: #eeeeee;
+    margin: 0 auto;
+}

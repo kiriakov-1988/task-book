@@ -15,7 +15,9 @@ class Task
 
                 $data = $result['data'];
 
-                if (isset($_FILES['userfile']) || !empty($_FILES['userfile'])) {
+                // Тут пришлось проверять на пустоту как минимум именно имя файла,
+                // так как начало создаваться пустой масив $_FILES['userfile'] без видимых причин на это ...
+                if (isset($_FILES['userfile']) && !empty($_FILES['userfile']['name'])) {
 
                     $file = new FileUploader();
                     $uploadStatus = $file->uploadFile();
@@ -48,7 +50,7 @@ class Task
                 }
 
             } else {
-                Session::addSessionStatus($result[['message']]);
+                Session::addSessionStatus($result['message']);
             }
         } else {
             Session::addSessionStatus('К маршруту "Добавить задачу" нельзя напрямую обращаться!');
