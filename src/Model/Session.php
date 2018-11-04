@@ -12,4 +12,17 @@ class Session
             'message' => $message
         ];
     }
+
+    public static function addAdminMarker():void
+    {
+        $_SESSION['adminMarker'] = true;
+    }
+
+    public static function delAdminMarker():void
+    {
+        if (isset($_SESSION['adminMarker'])) {
+            unset($_SESSION['adminMarker']);
+
+        }
+    }
 }

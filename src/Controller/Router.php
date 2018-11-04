@@ -22,6 +22,11 @@ class Router
      */
     const ROUTES = [
         '^add-task$' => 'Model/Task/addTask',
+        '^log-in$'  => 'View/View/logIn',
+        '^log-out$' => 'Model/Admin/logOutAdmin',
+        '^authorize$' => 'Model/Admin/authorizeAdmin',
+        '^edit-([1-9][0-9]*)$' => 'View/View/editTask/$1',
+        '^save-task$' => 'Model/Task/saveEditTask',
         '^$' => 'View/View/getIndexPage',
     ];
 

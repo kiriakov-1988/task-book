@@ -1,3 +1,5 @@
+<?php include 'admin_block.php'?>
+
 <?php
     // данная переменная получается из App\View\View::generate()
     if (count($data['listOfTasks'])):
@@ -14,6 +16,7 @@
             <th>Текст задачи</th>
             <th>Картинка</th>
             <th>Статус</th>
+            <?php if (isset($_SESSION['adminMarker'])): ?> <th>Действие</th> <?php endif; ?>
         </tr>
         </thead>
         <tbody>
@@ -25,6 +28,7 @@
                 <td><?=$row['task_text']?></td>
                 <td><?php if (!empty($row['img'])): ?><img style="max-width: 160px" src="<?=CONFIG_UPLOAD_DIR.$row['img']?>"><?php endif; ?></td>
                 <td><img style="max-width: 45px" src="<?=$row['status']?>.png" alt="<?=$row['status']?>"></td>
+                <?php if (isset($_SESSION['adminMarker'])): ?> <td><a href="/edit-<?=$row['id']?>" class="btn btn-outline-primary">Редактировать</a></td> <?php endif; ?>
             </tr>
         <?php endforeach; ?>
         </tbody>
@@ -76,6 +80,8 @@
                     <input class="btn btn-success w-100" type="submit" value="Добавить" />
                 </div>
             </div>
+
+            <!-- TODO Предварительный просмотр задачи -->
 
         </form>
     </div>

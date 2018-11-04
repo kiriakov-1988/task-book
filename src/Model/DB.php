@@ -28,6 +28,7 @@ class DB
             self::DB['pass']);
     }
 
+    // TODO сортировка и пагинация
     public function getTasks(): array
     {
         $sqlQuery = 'SELECT * FROM `tasks` ORDER BY `id`';
@@ -52,6 +53,50 @@ class DB
         $stmt->bindParam(':email',$taskData['email']);
         $stmt->bindParam(':task_text',$taskData['task_text']);
         $stmt->bindParam(':img',$taskData['img']);
+
+        if ($stmt->execute()) {
+
+            return true;
+
+        } else {
+
+            return false;
+
+        }
+    }
+
+        public function getTask(int $id):array
+    {
+        $sqlQuery = 'SELECT * FROM `tasks` WHERE `id` = ' . $id;
+
+        $stmt = $this->connection->prepare($sqlQuery);
+
+        if ($success = $stmt->execute()) {
+
+            if ($data = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                return $data;
+            }
+        }
+
+        return [];
+    }
+
+    public function editTask(array $taskData)
+    {
+        if ($taskData['status']) {
+            $sqlQuery = 'UPDATE `tasks` 
+                            SET `task_text` = :task_text, `status` = "completed" 
+                            WHERE id = :id';
+        } else {
+            $sqlQuery = 'UPDATE `tasks` 
+                            SET `task_text` = :task_text
+                            WHERE id = :id';
+        }
+
+        $stmt = $this->connection->prepare($sqlQuery);
+
+        $stmt->bindParam(':id',$taskData['id']);
+        $stmt->bindParam(':task_text',$taskData['task_text']);
 
         if ($stmt->execute()) {
 

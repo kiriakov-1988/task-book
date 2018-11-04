@@ -48,7 +48,6 @@ class Task
                 }
 
             } else {
-                // TODO + выполнить проверку с отключенной валидацией браузера
                 Session::addSessionStatus($result[['message']]);
             }
         } else {
@@ -58,6 +57,53 @@ class Task
         header('Location: /');
 
         // возвращаем true так как маршрут отработал (здесь и далее)
+        return true;
+    }
+
+    public function saveEditTask(): bool
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+            if (isset($_POST['id']) && !empty($_POST['id'])
+                && isset($_POST['task_text']) && !empty($_POST['task_text'])
+                && (mb_strlen($_POST['task_text'])) <=255) {
+
+                $data = [
+                    'id'        => (int)$_POST['id'],
+                    'task_text' => htmlspecialchars(trim($_POST['task_text'])),
+                    'status'    => ''
+                ];
+
+                if (isset($_POST['status'])) {
+                    $data['status'] = true;
+                }
+
+                try {
+                    $db = new DB();
+
+                    if ($db->editTask($data)) {
+
+                        Session::addSessionStatus('Задача успешно обновлена!', true);
+
+                        header('Location: /');
+                        return true;
+
+                    } else {
+                        Session::addSessionStatus('Ошибка при обновлении задачи в ДБ!');
+                    }
+                } catch (\PDOException $e) {
+                    Session::addSessionStatus('При обновлении задачи в БД произошла PDO ошибка - ' . $e->getMessage());
+                }
+
+            } else {
+                Session::addSessionStatus('Форма заполнена невалидными данными!');
+            }
+
+        } else {
+            Session::addSessionStatus('К маршруту "Соранить задачу" нельзя напрямую обращаться!');
+        }
+
+        header('Location: ' . $_SERVER['HTTP_REFERER']);
         return true;
     }
 
@@ -74,7 +120,9 @@ class Task
                 'img'       => ''
             ];
 
-            // TODO Добавить переменные в ссесию
+            // Как дополнительную опцию можно реализовать сохранения переменных в сессию на случай ошибок
+            // Но данный момент выполняется полная валидация данных в браузере
+            // Ну а кто ее обходит - будет вносить заново данные ...
 
             $error = '';
 
@@ -86,7 +134,7 @@ class Task
                 $error .= 'E-mail пользователя превышает 100 символов. ';
             }
 
-            if (mb_strlen($data['email']) > 255) {
+            if (mb_strlen($data['task_text']) > 255) {
                 $error .= 'Текст задачи превышает 255 символов. ';
             }
 
