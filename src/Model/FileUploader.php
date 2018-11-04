@@ -10,7 +10,7 @@ class FileUploader
      */
     const FILE_MIME_TYPE = CONFIG_MIME_TYPE;
 
-    const UPLOAD_DIR = '/images/';
+    const UPLOAD_DIR = CONFIG_UPLOAD_DIR;
 
     const MAX_WIDTH  = 320;
     const MAX_HEIGHT = 240;

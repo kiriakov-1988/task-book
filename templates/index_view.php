@@ -1,5 +1,5 @@
 <?php
-    // данная переменная получается из App\Controller\View::generate()
+    // данная переменная получается из App\View\View::generate()
     if (count($data['listOfTasks'])):
 ?>
 
@@ -11,7 +11,7 @@
             <th>ID</th>
             <th>Имя</th>
             <th>E-mail</th>
-            <th style="max-width: 50%">Текст задачи</th>
+            <th>Текст задачи</th>
             <th>Картинка</th>
             <th>Статус</th>
         </tr>
@@ -23,8 +23,8 @@
                 <td><?=$row['user_name']?></td>
                 <td><?=$row['email']?></td>
                 <td><?=$row['task_text']?></td>
-                <td><?=$row['img']?></td>
-                <td><?=$row['status']?></td>
+                <td><?php if (!empty($row['img'])): ?><img style="max-width: 160px" src="<?=CONFIG_UPLOAD_DIR.$row['img']?>"><?php endif; ?></td>
+                <td><img style="max-width: 45px" src="<?=$row['status']?>.png" alt="<?=$row['status']?>"></td>
             </tr>
         <?php endforeach; ?>
         </tbody>
@@ -44,33 +44,33 @@
         <form enctype="multipart/form-data" method="post" action="/add-task">
 
             <div class="row">
-                <div class="col-7 text-left">
+                <div class="col-lg-7 text-left">
                     <label for="user_name">Имя пользователя *</label>
                     <input type="text" id="user_name" name="user_name" maxlength="100" required />
                 </div>
-                <div class="col-5 text-right">
+                <div class="col-lg-5 text-lg-right">
                     <label for="email">е-mail *</label>
                     <input type="email" id="email" name="email" maxlength="100" required />
                 </div>
             </div>
 
             <div class="row my-2">
-                <div class="col-3 text-left">
+                <div class="col-md-3 text-left">
                     <label for="task_text">Текст задачи *</label>
                 </div>
-                <div class="col-9 text-right">
+                <div class="col-md-9 text-right">
                     <textarea id="task_text" name="task_text" maxlength="255" required style="min-width: 99%"></textarea>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-8 text-left">
+                <div class="col-md-8 text-left">
                     <label for="userfile">
                         Выберите картинку:
                     </label>
                     <input type="file" name="userfile" id="userfile" accept="<?=CONFIG_MIME_TYPE?>" maxlength="100" />
                 </div>
-                <div class="col-4 text-right">
+                <div class="col-md-4 text-right">
                     <input class="btn btn-success w-100" type="submit" value="Добавить" />
                 </div>
             </div>

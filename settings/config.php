@@ -14,3 +14,5 @@ define('CONFIG_DB', [
 ]);
 
 define('CONFIG_MIME_TYPE', 'image/jpeg,image/gif,image/png');
+
+define('CONFIG_UPLOAD_DIR', '/images/');
