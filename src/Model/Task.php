@@ -42,6 +42,9 @@ class Task
 
                         Session::addSessionStatus('Новая задача успешно добавлена добавлена!', true);
 
+                        header('Location: ' . $_SERVER['HTTP_REFERER']);
+                        return true;
+
                     } else {
                         Session::addSessionStatus('Ошибка при добавлении задачи в ДБ!');
                     }
@@ -102,7 +105,7 @@ class Task
             }
 
         } else {
-            Session::addSessionStatus('К маршруту "Соранить задачу" нельзя напрямую обращаться!');
+            Session::addSessionStatus('К маршруту "Сохранить задачу" нельзя напрямую обращаться!');
         }
 
         header('Location: ' . $_SERVER['HTTP_REFERER']);

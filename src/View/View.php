@@ -8,15 +8,36 @@ use App\Model\Session;
 
 class View
 {
-    public function getIndexPage(): bool
+    /**
+     * Максимальное количество задач на странице .
+     */
+    const MAX_PER_PAGE = 3;
+
+    public function getIndexPage(string $page = 'page-1'): ?bool
     {
+        $page = substr($page, 5);
+
         try {
             $db = new DB();
-            $listOfTasks = $db->getTasks();
+            $result = $db->getTasks((int)$page);
 
-            $data = [
-                'listOfTasks' => $listOfTasks,
-            ];
+            if (!isset($result['success'])) {
+                // Запрос на несуществующую страницу (в пагинации)
+                return null;
+            }
+
+            if ($result['success']) {
+                $data = [
+                    'listOfTasks' => $result['listOfTasks'],
+                    'pagination'  => $result['pagination']
+                ];
+            } else {
+                Session::addSessionStatus('При загрузке данных из БД произошла ошибка в БД');
+                $data = [
+                    'listOfTasks' => '',
+                ];
+            }
+
         } catch (\PDOException $e) {
             // Тут наверно не совсем желательно выводить текст ошибки из Исключения, а может только инфо-сообщение.
             // Но такая ошибка восновном возникнет при развертывании приложения - и будет как раз в помощь.

@@ -34,6 +34,8 @@
         </tbody>
     </table>
 
+    <?php include 'pagination.php'?>
+
 <?php else: ?>
 
     <h1 class="h3 p-5 text-warning">На данный момент в базе еще нету загруженных данных !</h1>

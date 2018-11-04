@@ -3,6 +3,8 @@
 namespace App\Model;
 
 
+use App\View\View;
+
 class DB
 {
     /**
@@ -28,18 +30,48 @@ class DB
             self::DB['pass']);
     }
 
-    // TODO сортировка и пагинация
-    public function getTasks(): array
+    // TODO сортировка
+    public function getTasks(int $page): array
     {
-        $sqlQuery = 'SELECT * FROM `tasks` ORDER BY `id`';
+        $page = intval($page);
+
+        if ($page < 1) {
+            // данная ситуация маловероятна так РОУТЕР должен не пропустить такое
+            $page = 1;
+        }
+
+        $totalPage = $this->getTotalPage();
+
+        if ($page > $totalPage) {
+            return [];
+        }
+
+        $start = $page * View::MAX_PER_PAGE - View::MAX_PER_PAGE;
+
+        $sqlQuery = 'SELECT * FROM `tasks` ORDER BY `id`
+                       LIMIT :start, :offset';
 
         $stmt = $this->connection->prepare($sqlQuery);
 
+        $offset = View::MAX_PER_PAGE;
+
+        $stmt->bindParam(':start',$start, \PDO::PARAM_INT);
+        $stmt->bindParam(':offset',$offset, \PDO::PARAM_INT);
+
         if ($success = $stmt->execute()) {
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return [
+                'success' => true,
+                'listOfTasks' => $stmt->fetchAll(\PDO::FETCH_ASSOC),
+                'pagination'  => [
+                    'currentPage'  => $page,
+                    'totalPage' => $totalPage
+                ]
+            ];
         }
 
-        return [];
+        return [
+            'success' => false
+        ];
     }
 
     public function addTask(array $taskData)
@@ -65,7 +97,7 @@ class DB
         }
     }
 
-        public function getTask(int $id):array
+    public function getTask(int $id):array
     {
         $sqlQuery = 'SELECT * FROM `tasks` WHERE `id` = ' . $id;
 
@@ -106,6 +138,23 @@ class DB
 
             return false;
 
+        }
+    }
+
+    private function getTotalPage():int
+    {
+        $sqlQuery = 'SELECT COUNT(`id`) as `total` FROM `tasks`';
+
+        $stmt = $this->connection->query($sqlQuery);
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if ($result['total']) {
+
+            return intval(($result['total'] - 1) / View::MAX_PER_PAGE) + 1;
+
+        } else {
+            return 0;
         }
     }
 }
