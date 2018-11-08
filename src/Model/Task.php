@@ -3,8 +3,20 @@
 namespace App\Model;
 
 
+/**
+ * Class Task
+ * Выполняет работу при добовлении новой / обновлении существующей задачи
+ *
+ * @package App\Model
+ */
 class Task
 {
+    /**
+     * Обрабатывает форму для добавления новой задачи.
+     * В случае указания картинки, делегирует задание так же соответствующему классу
+     *
+     * @return bool
+     */
     public function addTask(): bool
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -65,6 +77,11 @@ class Task
         return true;
     }
 
+    /**
+     * Выполняет обработку формы для редактирования определенной задачи
+     *
+     * @return bool
+     */
     public function saveEditTask(): bool
     {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -112,6 +129,13 @@ class Task
         return true;
     }
 
+    /**
+     * Выполняет серверную валидацию данных
+     * В случае ошибки генерируются соответствующие сообщения,
+     * которые потом отображаются пользователю.
+     *
+     * @return array
+     */
     private function checkAndGetPostValues():array
     {
         if (isset($_POST['user_name']) && !empty($_POST['user_name'])

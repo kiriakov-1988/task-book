@@ -3,6 +3,13 @@
 namespace App\Model;
 
 
+/**
+ * Class FileUploader
+ * Выполняет загрузку картинку, в случае ее указания в задаче.
+ * Так же в случае бОльшего расширения картинки, выполняет соответствующую обработку
+ *
+ * @package App\Model
+ */
 class FileUploader
 {
     /**
@@ -10,11 +17,26 @@ class FileUploader
      */
     const FILE_MIME_TYPE = CONFIG_MIME_TYPE;
 
+    /**
+     * Директория для загрузки данных картинок
+     */
     const UPLOAD_DIR = CONFIG_UPLOAD_DIR;
 
+    /**
+     * Максимальная ширина картинки
+     */
     const MAX_WIDTH  = 320;
+
+    /**
+     * Максимальная высота
+     */
     const MAX_HEIGHT = 240;
 
+    /**
+     * Реализует непосредственную загрузку файлов на сервер
+     *
+     * @return array
+     */
     public function uploadFile():array
     {
         if (!$_FILES['userfile']['error']) {
@@ -76,6 +98,12 @@ class FileUploader
         ];
     }
 
+    /**
+     * Выполняет проверку на соответствие картинки допустимой ширине/высоте
+     *
+     * @param $fileName
+     * @return bool
+     */
     private function checkImageSize($fileName):bool
     {
         list($widthOrig, $heightOrig) = getimagesize($fileName);
@@ -91,6 +119,15 @@ class FileUploader
         return true;
     }
 
+    /**
+     * Выполняет пропорциональное уменьшение картинок с большим расширением.
+     * Картинки с бОльшим расширениям перезаписываются после их загрузки в соответствующую папку на сервере
+     * Поэтому в случае ошибки в данном функционале картинка останется с исходными расширениями.
+     * В любом случае размер отображения картинки ограничивается в самом шаблоне.
+     *
+     * @param $fileName
+     * @return bool
+     */
     private function resizeImage($fileName): bool
     {
         $width  = self::MAX_WIDTH;

@@ -5,6 +5,13 @@ namespace App\Model;
 
 use App\View\View;
 
+/**
+ * Class DB
+ * Данный класс предназначен для работы с базой данной.
+ * Выполняет все запросы к ней.
+ *
+ * @package App\Model
+ */
 class DB
 {
     /**
@@ -30,7 +37,15 @@ class DB
             self::DB['pass']);
     }
 
-    // TODO сортировка
+    /**
+     * Возвращает массив с данными из базы даннных.
+     * В случае ошибки или отсутсвия данных возвращается пустой масив.
+     * Реализована возможность пагинации.
+     * В случае обращения к несуществующей странице (при пагинации) - возвращается ошибка 404
+     *
+     * @param int $page
+     * @return array
+     */
     public function getTasks(int $page): array
     {
         $page = intval($page);
@@ -47,6 +62,8 @@ class DB
         }
 
         $start = $page * View::MAX_PER_PAGE - View::MAX_PER_PAGE;
+
+        // TODO сортировка
 
         $sqlQuery = 'SELECT * FROM `tasks` ORDER BY `id`
                        LIMIT :start, :offset';
@@ -74,6 +91,12 @@ class DB
         ];
     }
 
+    /**
+     * Добавляет новую задачу в БД
+     *
+     * @param array $taskData
+     * @return bool
+     */
     public function addTask(array $taskData)
     {
         $sqlQuery = 'INSERT INTO `tasks` (`user_name`, `email`, `task_text`, `img`)
@@ -97,6 +120,12 @@ class DB
         }
     }
 
+    /**
+     * Возвращет данные о задаче из БД для их редактировани
+     *
+     * @param int $id
+     * @return array
+     */
     public function getTask(int $id):array
     {
         $sqlQuery = 'SELECT * FROM `tasks` WHERE `id` = ' . $id;
@@ -113,6 +142,13 @@ class DB
         return [];
     }
 
+    /**
+     * Вносит обновленные данные о задаче.
+     * Редактировать можно текст самой задачи и выставлять отметку о выполнении
+     *
+     * @param array $taskData
+     * @return bool
+     */
     public function editTask(array $taskData)
     {
         if ($taskData['status']) {
@@ -141,6 +177,14 @@ class DB
         }
     }
 
+    /**
+     * Производит подсчет общего количества страниц для пагинации
+     * В случае пустой БД (и ошибки запроса) возвращается 1,
+     * так как при пагинации всегда текущая страница как минимум первая.
+     * Эти два значения соответствующе сравниваются в getTasks()
+     *
+     * @return int
+     */
     private function getTotalPage():int
     {
         $sqlQuery = 'SELECT COUNT(`id`) as `total` FROM `tasks`';

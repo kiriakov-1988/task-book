@@ -3,8 +3,20 @@
 namespace App\Model;
 
 
+/**
+ * Class UniqueName
+ * Генерирует максимально возможное уникальное имя картинки.
+ * Возвращает разные значения даже для одинаковых файлов.
+ * @package App\Model
+ */
 class UniqueName
 {
+    /**
+     * Массив данных для транслитерации
+     * Русские/украинские буквы заменяются на соответствующие латинчкие в таком формате.
+     * Пробелы в имени картинки заменяются на тире.
+     * Остальные символы остаются неизменными.
+     */
     const CONVERTER  = [
         ' ' => '-',
 
@@ -36,13 +48,29 @@ class UniqueName
         'Є' => 'E',   'І' => 'I',    'Ї' => 'I',
     ];
 
+    /**
+     * Содержит исходное имя картинки (как на ПК пользователя)
+     *
+     * @var string
+     */
     private $fileName;
 
+    /**
+     * UniqueName constructor.
+     * @param string $fileName
+     */
     public function __construct(string $fileName)
     {
         $this->fileName = $fileName;
     }
 
+    /**
+     * Возвращает максимально возможную уникальную строку текста, которая используется как имя картинки.
+     * Используется метка микровремени, дополнительно случайное число и само имя файла.
+     *
+     *
+     * @return string
+     */
     public function getUniqueFileName(): string
     {
         $uniqueTimeStamp = microtime(true) * 10000;
@@ -55,6 +83,11 @@ class UniqueName
 
     }
 
+    /**
+     * Выполняет транслитирацию имени картинки
+     *
+     * @return string
+     */
     private function getTransliterateName(): string
     {
         return strtr($this->fileName, self::CONVERTER);
