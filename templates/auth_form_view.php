@@ -26,3 +26,7 @@
     </div>
 
 </div>
+
+<p class="m-3">
+    <a href="<?=$_SERVER['HTTP_REFERER'] ?? '/'?>" class="btn btn-outline-primary">Вернуться на предыдущую страницу</a>
+</p>
