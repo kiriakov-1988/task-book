@@ -107,7 +107,12 @@ class Task
 
                         Session::addSessionStatus('Задача успешно обновлена!', true);
 
-                        header('Location: /');
+                        if (isset($_SESSION['refererLink'])) {
+                            // данная переменная создается в View::editTask()
+                            header('Location: ' . $_SESSION['refererLink']);
+                        } else {
+                            header('Location: /');
+                        }
                         return true;
 
                     } else {

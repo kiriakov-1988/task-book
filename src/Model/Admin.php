@@ -64,7 +64,7 @@ class Admin
     {
         Session::delAdminMarker();
 
-        header('Location: /');
+        header('Location: ' . $_SERVER['HTTP_REFERER']);
 
         return true;
     }
