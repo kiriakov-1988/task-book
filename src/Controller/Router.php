@@ -27,7 +27,7 @@ class Router
         '^authorize$' => 'Model/Admin/authorizeAdmin',
         '^edit-([1-9][0-9]*)$' => 'View/View/editTask/$1',
         '^save-task$' => 'Model/Task/saveEditTask',
-        '^(page-[1-9][0-9]*)*$' => 'View/View/getIndexPage/$1',
+        '^(page-[1-9][0-9]*)*(/sort-user|/sort-email|/sort-status)*(/desc|/DESC)*$' => 'View/View/getIndexPage/$1$2$3',
     ];
 
     public function run(): void

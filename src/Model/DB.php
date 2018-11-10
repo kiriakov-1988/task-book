@@ -41,12 +41,15 @@ class DB
      * Возвращает массив с данными из базы даннных.
      * В случае ошибки или отсутсвия данных возвращается пустой масив.
      * Реализована возможность пагинации.
-     * В случае обращения к несуществующей странице (при пагинации) - возвращается ошибка 404
+     * В случае обращения к несуществующей странице (при пагинации)
+     * или неверным параметрам сортировки - возвращается ошибка 404
      *
-     * @param int $page
+     * @param int    $page       номер текущей страницы для пагинации
+     * @param string $colName    имя столбика, по которому выполняется сортировка
+     * @param string $direction  направление сортировки
      * @return array
      */
-    public function getTasks(int $page): array
+    public function getTasks(int $page, string $colName, string $direction): array
     {
         $page = intval($page);
 
@@ -63,15 +66,16 @@ class DB
 
         $start = $page * View::MAX_PER_PAGE - View::MAX_PER_PAGE;
 
-        // TODO сортировка
-
-        $sqlQuery = 'SELECT * FROM `tasks` ORDER BY `id`
+        $sqlQuery = 'SELECT * FROM `tasks` ORDER BY :col_num '. $direction . ' 
                        LIMIT :start, :offset';
 
         $stmt = $this->connection->prepare($sqlQuery);
 
         $offset = View::MAX_PER_PAGE;
 
+        $colNum = $this->getColNum($colName);
+
+        $stmt->bindParam(':col_num',$colNum, \PDO::PARAM_INT);
         $stmt->bindParam(':start',$start, \PDO::PARAM_INT);
         $stmt->bindParam(':offset',$offset, \PDO::PARAM_INT);
 
@@ -201,4 +205,30 @@ class DB
             return 1;
         }
     }
+
+    /**
+     * Возвращает номер колонки в таблице БД
+     * В числа преобразуются только колонки доступные для сортировки.
+     * При изменении структуры таблицы в БД здесь необходимы обновления.
+     *
+     * @param string $colName
+     * @return int
+     */
+    private function getColNum(string $colName): int
+    {
+        switch ($colName) {
+            case 'user':
+                return 2;
+            case 'email':
+                return 3;
+            case 'status':
+                return 6;
+//          case 'id':
+//              return 1;
+            // можно просто проверять на 'id' или по дефолту возвращать сразу 1
+            default:
+                return 1;
+        }
+    }
+
 }

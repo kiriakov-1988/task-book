@@ -5,6 +5,7 @@ namespace App\View;
 
 use App\Model\DB;
 use App\Model\Session;
+use App\Model\Sorter;
 
 /**
  * Class View
@@ -25,17 +26,26 @@ class View
      * Отображает главную страницу сайта
      * Дополнительно можно так же передать вторым параметром определенные данные.
      * В случае указания несуществующей странички (при пагинации) - генерируется ошибка 404
+     * К главной странице можно обращаться и без указания страницы №1, но если заданы параметры сортирровки,
+     * то префикс "page-1" всегда присутствует в ссылке (так построена маршрутизация)
      *
-     * @param string $page
+     * @param string $page       номер страницы в пагинации
+     * @param string $colName    колонка, которая сортируется
+     * @param string $direction  по умолчанию, сортировка по возростанию
      * @return bool|null
      */
-    public function getIndexPage(string $page = 'page-1'): ?bool
+    public function getIndexPage(string $page, string $colName = 'sort-id', string $direction = 'ASC'): ?bool
     {
-        $page = substr($page, 5);
+        $sorter = Sorter::setOrder($page, $colName, $direction);
+
+        if (!count($sorter)) {
+            // в случае ошибки, например неверный параметр при сортировке
+            return null;
+        }
 
         try {
             $db = new DB();
-            $result = $db->getTasks((int)$page);
+            $result = $db->getTasks($sorter['page'], $sorter['colName'], $sorter['direction']);
 
             if (!isset($result['success'])) {
                 // Запрос на несуществующую страницу (в пагинации)
@@ -77,6 +87,11 @@ class View
      */
     public function editTask(int $id): ?bool
     {
+        // Для возврата на ту же страничку после редактирования задачи.
+        // Здесь не использует класс SESSION, так как используется только раз
+        // и из-за промежуточной страницы с формой редактирования
+        $_SESSION['refererLink'] = $_SERVER['HTTP_REFERER'];
+
         if (isset($_SESSION['adminMarker'])) {
             $data = [];
 

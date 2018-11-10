@@ -3,6 +3,32 @@
 <?php
     // данная переменная получается из App\View\View::generate()
     if (count($data['listOfTasks'])):
+
+        // в шаблоне наверно становится много логики, но это моя первая реализация сортировки и пагинации в разрезе MVC
+
+        // данная переменная так же используется в шаблоне
+        $page = $data['pagination']['currentPage'];
+
+        // используется для добавления направления сортировки в отсортированом столбце
+        if (isset($_SESSION['sorter']['colName']))
+        {
+            $colName = $_SESSION['sorter']['colName'];
+        }  else {
+            $colName = '';
+        }
+
+        // формирует соответствующий стиль для отсортированого столбца
+        if (isset($_SESSION['sorter']['direction']))
+        {
+            $classStyle = 'sort-' . mb_strtolower($_SESSION['sorter']['direction']);
+        }  else {
+            $classStyle = '';
+        }
+
+        $direction = \App\Model\Session::getDirectionForThLink();
+
+        // как вариант можно выдавать другое сообщение для отсортированого столбца
+        $sortTitle = 'Кликните для сортировки по возрастанию, повторный клик сортирует в обратном порядке';
 ?>
 
     <h1 class="h3 pt-4">Список задач:</h1>
@@ -10,12 +36,18 @@
     <table class="table table-bordered table-striped">
         <thead class="thead-dark">
         <tr>
-            <th>ID</th>
-            <th>Имя</th>
-            <th>E-mail</th>
+            <th><a href="/<?= ($page > 1) ? 'page-' . $page : '' ?>" title="Кликните для сбрасывания условий сортировки">ID</a></th>
+            <th <?= ($colName == 'user')  ? 'class="' . $classStyle . '"' : '' ?> >
+                <a href="/page-<?=$page?>/sort-user<?= ($colName == 'user')   ? $direction : '' ?>" title="<?=$sortTitle?>" >Имя</a>
+            </th>
+            <th <?= ($colName == 'email') ? 'class="' . $classStyle . '"' : '' ?> >
+                <a href="/page-<?=$page?>/sort-email<?= ($colName == 'email') ? $direction : '' ?>" title="<?=$sortTitle?>" >E-mail</a>
+            </th>
             <th>Текст задачи</th>
             <th>Картинка</th>
-            <th>Статус</th>
+            <th <?= ($colName == 'status') ? 'class="' . $classStyle . '"' : '' ?> >
+                <a href="/page-<?=$page?>/sort-status<?= ($colName == 'status') ? $direction : '' ?>" title="<?=$sortTitle?>" >Статус</a>
+            </th>
             <?php if (isset($_SESSION['adminMarker'])): ?> <th>Действие</th> <?php endif; ?>
         </tr>
         </thead>
@@ -27,7 +59,7 @@
                 <td><?=$row['email']?></td>
                 <td><?=$row['task_text']?></td>
                 <td><?php if (!empty($row['img'])): ?><img style="max-width: 160px" src="<?=CONFIG_UPLOAD_DIR.$row['img']?>"><?php endif; ?></td>
-                <td><img style="max-width: 45px" src="<?=$row['status']?>.png" alt="<?=$row['status']?>"></td>
+                <td><img style="max-width: 45px" src="/<?=$row['status']?>.png" alt="<?=$row['status']?>"></td>
                 <?php if (isset($_SESSION['adminMarker'])): ?> <td><a href="/edit-<?=$row['id']?>" class="btn btn-outline-primary">Редактировать</a></td> <?php endif; ?>
             </tr>
         <?php endforeach; ?>

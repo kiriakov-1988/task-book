@@ -6,3 +6,16 @@ table.table th, table.table td  {
     background-color: #eeeeee;
     margin: 0 auto;
 }
+
+.sort-asc a {
+    border-bottom: 2px groove #0056b3;
+}
+
+.sort-desc a {
+    border-top: 2px ridge #0056b3;
+}
+
+.sort-asc a:hover {
+    border-top: 2px solid #0056b3;
+    text-decoration: none;
+}
